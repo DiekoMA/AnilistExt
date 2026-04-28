@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "AnilistExt (Package)": {
+      "commandName": "MsixPackage",
+      "doNotLaunchApp": true
+    },
+    "AnilistExt (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
