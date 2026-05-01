@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.CommandPalette.Extensions;
-using Shmuelie.WinRTServer;
 using Shmuelie.WinRTServer.CsWinRT;
 using System;
+using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
+using AnilistExt.Helpers;
+using Microsoft.CommandPalette.Extensions.Toolkit;
+using Serilog;
 
 namespace AnilistExt;
 
@@ -18,6 +20,15 @@ public class Program
     {
         if (args.Length > 0 && args[0] == "-RegisterProcessAsComServer")
         {
+            var directory = Utilities.BaseSettingsPath("DiekoMA.Anilist");
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.File(Path.Combine(directory,"logging", "log.txt"), 
+                    rollingInterval: RollingInterval.Day,
+                    rollOnFileSizeLimit: true)
+                .CreateLogger();
+            
+            _ = AnilistHelper.Instance;
+            
             global::Shmuelie.WinRTServer.ComServer server = new();
 
             ManualResetEvent extensionDisposedEvent = new(false);

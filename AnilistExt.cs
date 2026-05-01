@@ -5,7 +5,11 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using AnilistExt.Helpers;
 using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
+using Serilog;
+using Serilog.Core;
 
 namespace AnilistExt;
 
@@ -15,10 +19,16 @@ public sealed partial class AnilistExt : IExtension, IDisposable
     private readonly ManualResetEvent _extensionDisposedEvent;
 
     private readonly AnilistExtCommandsProvider _provider = new();
-
+    public static SettingsManager AppSettings { get; private set; } = new();
+    
     public AnilistExt(ManualResetEvent extensionDisposedEvent)
     {
         this._extensionDisposedEvent = extensionDisposedEvent;
+        var savedToken = AppSettings.AccessToken;
+        if (!string.IsNullOrEmpty(savedToken))
+        {
+            _ = AnilistHelper.Instance.UpdateToken(savedToken);
+        }
     }
 
     public object? GetProvider(ProviderType providerType)

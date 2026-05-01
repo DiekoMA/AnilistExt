@@ -1,16 +1,24 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Text.Json.Nodes;
+using AnilistExt.Helpers;
 using AniListNet;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Serilog;
+using Serilog.Core;
 
 namespace AnilistExt;
 
 internal sealed partial class SaveCredsPage : ContentPage
 {
-    private readonly AnilistTokenContentForm tokenForm = new();
-    public override IContent[] GetContent() => [tokenForm];
+    private readonly AnilistTokenContentForm tokenForm;
+
+    public override IContent[] GetContent()
+    {
+        var currentToken = AnilistExt.AppSettings.AccessToken;
+        return [new AnilistTokenContentForm(currentToken)];
+    }
 
     public SaveCredsPage()
     {
@@ -22,48 +30,53 @@ internal sealed partial class SaveCredsPage : ContentPage
 
 internal sealed partial class AnilistTokenContentForm : FormContent
 {
-    public AnilistTokenContentForm()
+    private string _loginUrl = "https://anilist.co/api/v2/oauth/authorize?client_id=40249&response_type=token";
+    public AnilistTokenContentForm(string currentToken)
     {
         TemplateJson = $$"""
-                         {
-                             "type": "AdaptiveCard",
-                             "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
-                             "version": "1.6",
-                             "body": [
-                                 {
-                                     "type": "TextBlock",
-                                     "size": "Medium",
-                                     "weight": "Bolder",
-                                     "text": " ${TokenForm.title}",
-                                     "horizontalAlignment": "Center",
-                                     "wrap": true,
-                                     "style": "heading"
-                                 },
-                                 {
-                                     "type": "Input.Text",
-                                     "label": "Token",
-                                     "isRequired": true,
-                                     "placeholder": "Placeholder text",
-                                     "errorMessage": "Token is required",
-                                     "id": "Token"
-                                 }
-                             ],
-                             "actions": [
-                                 {
-                                     "type": "Action.Submit",
-                                     "title": "Save",
-                                     "id": "save_button"
-                                 }
-                             ]
-                         }
-                         """;
+                          {
+                              "type": "AdaptiveCard",
+                              "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+                              "version": "1.6",
+                              "body": [
+                                  {
+                                      "type": "TextBlock",
+                                      "size": "Medium",
+                                      "weight": "Bolder",
+                                      "text": " Set AniList Token",
+                                      "horizontalAlignment": "Center",
+                                      "wrap": true,
+                                      "style": "heading"
+                                  },
+                                  {
+                                      "type": "Input.Text",
+                                      "label": "Token",
+                                      "isRequired": true,
+                                      "value": "{{currentToken}}",
+                                      "placeholder": "Placeholder text",
+                                      "errorMessage": "Token is required",
+                                      "id": "access_token"
+                                  }
+                              ],
+                              "actions": [
+                                  {
+                                      "type": "Action.OpenUrl",
+                                      "title": "Get User Token",
+                                      "url": "{{_loginUrl}}"
+                                  },
+                                  {
+                                      "type": "Action.Submit",
+                                      "title": "Save"
+                                  }
+                              ]
+                          }
+                          """;
 
     }
 
     public override CommandResult SubmitForm(string payload)
     {
         var formInput = JsonNode.Parse(payload)?.AsObject();
-        Debug.WriteLine($"Form submitted with formInput: {formInput}");
         if (formInput == null)
         {
             return CommandResult.GoHome();
@@ -74,10 +87,17 @@ internal sealed partial class AnilistTokenContentForm : FormContent
             PrimaryCommand = new AnonymousCommand(
                 () =>
                 {
-                    string? token = formInput["token"]?.ToString();
-                    File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "secrets", "ani_token.json"), token);
-                    ToastStatusMessage t = new($"Saved to filePath" ?? "Nothing was entered");
-                    t.Show();
+                    AnilistExt.AppSettings.Settings.Update(payload);
+                    AnilistExt.AppSettings.SaveSettings();
+                    
+                    var newToken = AnilistExt.AppSettings.AccessToken;
+                    
+                    if (!string.IsNullOrEmpty(newToken))
+                    {
+                        _ = AnilistHelper.Instance.UpdateToken(newToken);
+                        ToastStatusMessage t = new($"Saved to filePath" ?? "Nothing was entered");
+                        t.Show();
+                    }
                 })
             {
                 Name = "Save",

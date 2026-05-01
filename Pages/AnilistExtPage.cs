@@ -3,45 +3,44 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Threading.Tasks;
-using AnilistExt.Commands;
-using AniListNet;
+using AnilistExt.Helpers;
 using AniListNet.Objects;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Serilog;
 
 namespace AnilistExt;
 
 internal sealed partial class AnilistExtPage : ListPage
 {
-    bool isLoggedIn  = false;
-    private string loginUrl = "https://anilist.co/api/v2/oauth/authorize?client_id=40249&response_type=token";
-    AniClient client;
-    User aniUser;
+    private string _cachedAvatarPath;
+    User aniUser = new();
+    bool isAuthed = AnilistHelper.Instance.client.IsAuthenticated;
     public AnilistExtPage()
     {
-        client = new AniClient();
-        isLoggedIn = client.IsAuthenticated;
+        _ = SetAuthedUser();
         Icon = IconHelpers.FromRelativePath("Assets\\AniListlogo.png");
         Title = "Anilist";
         Name = "Open";
     }
 
-    private async Task Authenticate()
+    private async Task SetAuthedUser()
     {
-        //await client.TryAuthenticateAsync();
-        aniUser = await client.GetAuthenticatedUserAsync();
+        if (!isAuthed)
+        {       
+            aniUser = await AnilistHelper.Instance.client.GetAuthenticatedUserAsync();
+        } 
     }
-
+    
     public override IListItem[] GetItems()
     {
-        var openLoginCommand = new OpenUrlCommand(loginUrl);
-        var openProfileCommand = new A_ShowProfile();
+        Log.Logger.Information("EXTENSION PAGE start: init");
+        Log.Logger.Information("EXTENSION PAGE: {isAuthed}", isAuthed);
+        Log.Logger.Information("EXTENSION PAGE: logged in as {aniUser.Name}", aniUser.Name);
         return [
-            // First Item should be your user profile
-            new ListItem(new NoOpCommand()) { Title = isLoggedIn ? "AUTHENTICATED USERNAME" : aniUser.Name, Subtitle = "100 Manga Read", Command = isLoggedIn ? openProfileCommand : openLoginCommand },
-            new ListItem(new NoOpCommand()) { Title = "MalificentMelon",Subtitle = "100 Manga Read"},
-            new ListItem(new NoOpCommand()) { Title = "Search", Subtitle = "Search anime"},
-            new ListItem(new NoOpCommand()) { Title = "Manga", Subtitle = "Search manga"},
+            isAuthed ? new ListItem(new SaveCredsPage()) { Icon = IconHelpers.FromRelativePath("Assets\\AniListlogo.png"),Title = "Not logged in, click to set your token." }:
+                new ListItem(new NoOpCommand()) { Icon = new IconInfo(aniUser.Avatar.LargeImageUrl.AbsoluteUri), Title = $"Logged in as {aniUser.Name}",  Subtitle = "Use the Dock band to view your full profile."},
+            new ListItem(new CommandItem(new SearchPage())) { Title = "Search", Subtitle = "Search" },
         ];
     }
 }
