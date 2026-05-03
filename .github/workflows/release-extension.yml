@@ -1,4 +1,4 @@
-﻿name: CmdPal Extension - Build EXE Installer
+name: CmdPal Extension - Build EXE Installer
 
 on:
   workflow_dispatch:
@@ -63,22 +63,21 @@ jobs:
       - name: Upload x64 installer artifact
         uses: actions/upload-artifact@v4
         with:
-#          name: ${{ env.EXTENSION_NAME }}-x64-installer
-          path: ${{ env.FOLDER_NAME }}/bin/Release/installer/*-x64.exe
+          name: ${{ env.EXTENSION_NAME }}-x64-installer
+          path: bin/Release/installer/*-x64.exe
           if-no-files-found: error
 
       - name: Upload ARM64 installer artifact
         uses: actions/upload-artifact@v4
         with:
-#          name: ${{ env.EXTENSION_NAME }}-arm64-installer
-          path: ${{ env.FOLDER_NAME }}/bin/Release/installer/*-arm64.exe
+          name: ${{ env.EXTENSION_NAME }}-arm64-installer
+          path: bin/Release/installer/*-arm64.exe
           if-no-files-found: warn
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.EXTENSION_NAME }}-v${{ steps.version.outputs.VERSION }}
-#          name: "${{ env.DISPLAY_NAME }} v${{ steps.version.outputs.VERSION }}"
           body: |
             ## 🎯 ${{ env.DISPLAY_NAME }} ${{ steps.version.outputs.VERSION }}
             
@@ -100,7 +99,7 @@ jobs:
             ## 🔗 More Information
             
             Repository: ${{ env.GITHUB_REPO_URL }}
-          files: ${{ env.FOLDER_NAME }}/bin/Release/installer/*.exe
+          files: bin/Release/installer/*.exe
           draft: false
           prerelease: false
         env:
