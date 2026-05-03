@@ -40,12 +40,12 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AniListNet" Version="1.7.1"/>
-    <PackageReference Include="Microsoft.CommandPalette.Extensions" Version="0.9.260303001"/>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="3.0.0-preview.260319.2"/>
-    <PackageReference Include="Serilog" Version="4.3.1"/>
-    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageReference Include="Shmuelie.WinRTServer" Version="2.2.1"/>
+    <PackageReference Include="AniListNet" Version="1.7.1" />
+    <PackageReference Include="Microsoft.CommandPalette.Extensions" Version="0.9.260303001" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
+    <PackageReference Include="Serilog" Version="4.3.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
+    <PackageReference Include="Shmuelie.WinRTServer" Version="2.1.1" />
 
     <!-- Needed to enable building an MSIX package -->
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX">
