@@ -1,10 +1,4 @@
-﻿using System.Threading.Tasks;
-using AnilistExt.Helpers;
-using AniListNet.Objects;
-using Microsoft.CommandPalette.Extensions;
-using Microsoft.CommandPalette.Extensions.Toolkit;
-
-namespace AnilistExt;
+﻿namespace AnilistExt;
 
 internal sealed partial class AniUserProfilePage : ContentPage
 {

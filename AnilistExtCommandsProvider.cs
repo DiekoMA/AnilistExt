@@ -2,13 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AnilistExt.Helpers;
-using AniListNet.Objects;
-using Microsoft.CommandPalette.Extensions;
-using Microsoft.CommandPalette.Extensions.Toolkit;
-
 namespace AnilistExt;
 
 public partial class AnilistExtCommandsProvider : CommandProvider
@@ -39,16 +32,16 @@ public partial class AnilistExtCommandsProvider : CommandProvider
     //         Title = "Profile",
     //         Icon = IconHelpers.FromRelativePath("Assets\\AniListlogo.png")
     //     };
-    //     var airingButton= new ListItem(new NoOpCommand())
-    //     {
-    //         Title = "Currently Airing",
-    //         Icon = IconHelpers.FromRelativePath("Assets\\AniListlogo.png")
-    //     };
+    //     // var airingButton= new ListItem(new NoOpCommand())
+    //     // {
+    //     //     Title = "Currently Airing",
+    //     //     Icon = IconHelpers.FromRelativePath("Assets\\AniListlogo.png")
+    //     // };
     //     
     //     List<ICommandItem> bands =
     //     [
     //         profileButton,
-    //         airingButton
+    //         //airingButton
     //     ];
     //     
     //     return bands.ToArray();

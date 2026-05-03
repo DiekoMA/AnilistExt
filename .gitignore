@@ -208,3 +208,5 @@ FakesAssemblies/
 
 # JetBrains Rider
 *.sln.iml
+build-exe.ps1
+setup-template.iss

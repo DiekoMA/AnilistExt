@@ -1,7 +1,4 @@
-﻿using Microsoft.CommandPalette.Extensions;
-using Microsoft.CommandPalette.Extensions.Toolkit;
-
-namespace AnilistExt;
+﻿namespace AnilistExt;
 
 internal sealed partial class  CurrentlyAiringPage : ContentPage
 {

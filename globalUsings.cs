@@ -1,0 +1,9 @@
+﻿global using System.Threading.Tasks;
+global using AnilistExt.Helpers;
+global using AniListNet.Objects;
+global using Microsoft.CommandPalette.Extensions;
+global using Microsoft.CommandPalette.Extensions.Toolkit;
+global using System.Collections.Generic;
+global using System.IO;
+global using AniListNet.Parameters;
+global using AniListNet;

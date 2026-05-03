@@ -27,7 +27,7 @@ internal sealed partial class AnilistExtPage : ListPage
     private async Task SetAuthedUser()
     {
         if (!isAuthed)
-        {       
+        {
             aniUser = await AnilistHelper.Instance.client.GetAuthenticatedUserAsync();
         } 
     }
@@ -37,6 +37,7 @@ internal sealed partial class AnilistExtPage : ListPage
         Log.Logger.Information("EXTENSION PAGE start: init");
         Log.Logger.Information("EXTENSION PAGE: {isAuthed}", isAuthed);
         Log.Logger.Information("EXTENSION PAGE: logged in as {aniUser.Name}", aniUser.Name);
+        
         return [
             isAuthed ? new ListItem(new SaveCredsPage()) { Icon = IconHelpers.FromRelativePath("Assets\\AniListlogo.png"),Title = "Not logged in, click to set your token." }:
                 new ListItem(new NoOpCommand()) { Icon = new IconInfo(aniUser.Avatar.LargeImageUrl.AbsoluteUri), Title = $"Logged in as {aniUser.Name}",  Subtitle = "Use the Dock band to view your full profile."},

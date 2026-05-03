@@ -1,7 +1,4 @@
-﻿using System.IO;
-using Microsoft.CommandPalette.Extensions.Toolkit;
-
-namespace AnilistExt.Helpers;
+﻿namespace AnilistExt.Helpers;
 
 public class SettingsManager : JsonSettingsManager
 {

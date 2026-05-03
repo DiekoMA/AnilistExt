@@ -10,12 +10,14 @@
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
     <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
 
-    <PublishProfile>win-$(Platform).pubxml</PublishProfile>
+<!--    <PublishProfile>win-$(Platform).pubxml</PublishProfile>-->
+    <WindowsPackageType>None</WindowsPackageType>
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include=".github\workflows\release-extension.yml" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
@@ -55,9 +57,6 @@
     <None Update="Assets\AniListlogo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Commands\" />
   </ItemGroup>
 
   <!--

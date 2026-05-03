@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
-using AnilistExt.Helpers;
-using AniListNet;
-using AniListNet.Objects;
-using AniListNet.Parameters;
-using Microsoft.CommandPalette.Extensions;
-using Microsoft.CommandPalette.Extensions.Toolkit;
+using AnilistExt.Commands;
 using Serilog;
-using Serilog.Core;
 
 namespace AnilistExt;
 
@@ -29,13 +21,13 @@ internal sealed partial class SearchPage : DynamicListPage
         PlaceholderText = "Search anime, manga, characters or users.";
         EmptyContent = new CommandItem(new NoOpCommand())
         {
-            Title = """¯\_(ツ)_/¯""",
-            Subtitle = "Start typing to search."
+            Title = "Start typing to search.",
+            Icon = IconHelpers.FromRelativePath("Assets\\AniListlogo.png")
         };
         mediaFilters = new AnilistMediaFilters();
         mediaFilters.PropChanged += MediaFiltersOnPropChanged;
         Filters = mediaFilters;
-        
+        ShowDetails = true;
     }
 
     private void MediaFiltersOnPropChanged(object sender, IPropChangedEventArgs args)
@@ -103,13 +95,80 @@ internal sealed partial class SearchPage : DynamicListPage
             
             
             _results = fetchedResults.Data
-                .Select(m =>
-                    (IListItem)new ListItem(
-                        new OpenUrlCommand($"https://anilist.co/{(m.Type == MediaType.Anime ? "anime" : "manga")}/{m.Id}/{m.Title.PreferredTitle}"))
+                .Select(m => (IListItem)new ListItem(new OpenUrlCommand($"https://anilist.co/{(m.Type == MediaType.Anime ? "anime" : "manga")}/{m.Id}/{m.Title.PreferredTitle}"))
                     {
                         Title = m.Title.PreferredTitle,
                         Subtitle = $"{m.Format} • {m.Status} • {m.AverageScore}%",
-                        Icon = new IconInfo(m.Cover.LargeImageUrl.AbsoluteUri)
+                        Icon = new IconInfo(m.Cover.LargeImageUrl.AbsoluteUri),
+                        Details = new Details()
+                        {
+                            HeroImage =  new IconInfo(m.Cover.ExtraLargeImageUrl.AbsoluteUri),
+                            Title = m.Title.PreferredTitle,
+                            Body = m.Description,
+                            Metadata = [
+                                new DetailsElement()  
+                                {  
+                                    Key = "Format",  
+                                    Data = new DetailsLink() { Text = $"{m.Format}"},
+                                },  
+                                new DetailsElement()
+                                {
+                                    Key = "Genres",
+                                    Data = new DetailsTags()
+                                    {
+                                        Tags = (m.Genres ?? []).Select(g => new Tag(g)).ToArray()
+                                    }
+                                },
+                                new DetailsElement()  
+                                {  
+                                    Key = "Status",  
+                                    Data = new DetailsLink() { Text = $"{m.Status}"},
+                                },  
+                                new DetailsElement()  
+                                {  
+                                    Key = "Start Date",  
+                                    Data = new DetailsLink() { Text = $"{m.StartDate.ToString()}"},
+                                },  
+                                m.Type == MediaType.Anime ? new DetailsElement()  
+                                {  
+                                    Key = "Season",  
+                                    Data = new DetailsLink() { Text = $"{m.Season}"},
+                                } : new DetailsElement()  
+                                {  
+                                    Key = "",  // Empty cause mangas don't have seasons, not an error
+                                    Data = new DetailsLink() { Text = ""},
+                                },  
+                                new DetailsElement()  
+                                {  
+                                    Key = "Average Score",  
+                                    Data = new DetailsLink() { Text = $"{m.AverageScore}%"},
+                                },  
+                                new DetailsElement()  
+                                {  
+                                    Key = "Mean Score",  
+                                    Data = new DetailsLink() { Text = $"{m.MeanScore}%"},
+                                },  
+                                new DetailsElement()  
+                                {  
+                                    Key = "Popularity",  
+                                    Data = new DetailsLink() { Text = $"{m.Popularity}"},
+                                },  
+                                new DetailsElement()  
+                                {  
+                                    Key = "Favorites",  
+                                    Data = new DetailsLink() { Text = $"{m.Favorites}"},
+                                },
+                            ]
+                        },
+                        
+                        MoreCommands = [
+                            new CommandContextItem(new NoOpCommand()) { Title = "Add to List", Command = new AddToListPage(m)},
+                            new CommandContextItem(new NoOpCommand()) { Title = "Remove from List", Command = new RemoveFromUserList(m.Id)},
+                            // new CommandContextItem(new NoOpCommand()) { Title = "+1"},
+                            // new CommandContextItem(new NoOpCommand()) { Title = ""},
+                            // new CommandContextItem(new NoOpCommand()) { Title = ""},
+                            new CommandContextItem(new OpenUrlCommand($"https://anilist.co/{(m.Type == MediaType.Anime ? "anime" : "manga")}/{m.Id}/{m.Title.PreferredTitle}")) { Title = "Open in browser."},
+                        ]
                     })
                 .ToArray() ?? []; 
             
