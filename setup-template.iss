@@ -22,5 +22,5 @@ Source: "bin\Release\win-x64\publish\*"; DestDir: "{app}"; Flags: ignoreversion 
 Name: "{group}\Anilist"; Filename: "{app}\AnilistExt.exe"
 
 [Registry]
-Root: HKCU; Subkey: "SOFTWARE\Classes\CLSID\{b5c71e57-cb39-46b2-91f7-bc94634785f5}"; ValueData: "Anilist"
-Root: HKCU; Subkey: "SOFTWARE\Classes\CLSID\{b5c71e57-cb39-46b2-91f7-bc94634785f5}\LocalServer32"; ValueData: "{app}\AnilistExt.exe -RegisterProcessAsComServer"
+Root: HKCU; Subkey: "SOFTWARE\Classes\CLSID\{{b5c71e57-cb39-46b2-91f7-bc94634785f5}}"; ValueData: "Anilist"
+Root: HKCU; Subkey: "SOFTWARE\Classes\CLSID\{{b5c71e57-cb39-46b2-91f7-bc94634785f5}}\LocalServer32"; ValueData: "{app}\AnilistExt.exe -RegisterProcessAsComServer"

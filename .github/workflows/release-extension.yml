@@ -57,9 +57,10 @@ jobs:
 
       - name: Build EXE installers (x64 and ARM64)
         run: |
-          .\${{ env.FOLDER_NAME }}\build-exe.ps1 -Version "${{ steps.version.outputs.VERSION }}"
+          .\build-exe.ps1 -Version "${{ steps.version.outputs.VERSION }}"
 #          .\build-exe.ps1 -Version "${{ steps.version.outputs.VERSION }}" -Platforms @("x64", "arm64")
         shell: pwsh
+        working-directory: ${{ env.FOLDER_NAME }}
 
       - name: Upload x64 installer artifact
         uses: actions/upload-artifact@v4
