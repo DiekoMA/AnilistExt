@@ -48,7 +48,7 @@
     <PackageReference Include="Shmuelie.WinRTServer" Version="2.1.1" />
 
     <!-- Needed to enable building an MSIX package -->
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX">
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.7.260501103">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
