@@ -59,7 +59,6 @@ jobs:
         run: |
           .\${{ env.FOLDER_NAME }}\build-exe.ps1 -Version "${{ steps.version.outputs.VERSION }}"
         shell: pwsh
-        working-directory: ${{ env.FOLDER_NAME }}
 
       - name: Upload x64 installer artifact
         uses: actions/upload-artifact@v4
