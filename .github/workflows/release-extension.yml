@@ -16,7 +16,7 @@ on:
 env:
   DISPLAY_NAME: ${{ vars.DISPLAY_NAME || 'Anilist' }}
   EXTENSION_NAME: ${{ vars.EXTENSION_NAME || 'AnilistExt' }}
-  FOLDER_NAME: ${{ vars.FOLDER_NAME || 'AnilistCMDPal' }}
+  FOLDER_NAME: ${{ vars.FOLDER_NAME || 'AnilistExt' }}
   GITHUB_REPO_URL: ${{ vars.GITHUB_REPO_URL || 'https://github.com/DiekoMA/AnilistExt' }}
 
 
