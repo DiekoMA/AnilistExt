@@ -46,7 +46,7 @@ jobs:
           if ("${{ github.event.inputs.version }}" -ne "") {
             $version = "${{ github.event.inputs.version }}"
           } else {
-            $projectFile = "${{ env.FOLDER_NAME }}/${{ env.EXTENSION_NAME }}.csproj"
+            $projectFile = "${{ env.EXTENSION_NAME }}.csproj"
             $xml = [xml](Get-Content $projectFile)
             $version = $xml.Project.PropertyGroup.AppxPackageVersion | Select-Object -First 1
             if (-not $version) { throw "Version not found in project file" }
@@ -57,7 +57,7 @@ jobs:
 
       - name: Build EXE installers (x64 and ARM64)
         run: |
-          .\${{ env.FOLDER_NAME }}\build-exe.ps1 -Version "${{ steps.version.outputs.VERSION }}"
+          .\build-exe.ps1 -Version "${{ steps.version.outputs.VERSION }}"
         shell: pwsh
 
       - name: Upload x64 installer artifact
