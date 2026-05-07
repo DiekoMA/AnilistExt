@@ -1,18 +1,15 @@
-﻿name: Build and Release
-
+name: Build and Release
 on:
   push:
     tags:
-      - 'v*.*.*.*'   # triggers on tags like v0.0.1.0
-
+      - 'v*.*.*.*'
+  workflow_dispatch:
 jobs:
   build:
     runs-on: windows-latest
-
     env:
       SOLUTION_PATH: AnilistExt.csproj
-      MSIX_OUTPUT: publish\AnilistExt.msix
-
+      MSIX_OUTPUT: "publish\\AnilistExt.msix"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,44 +23,38 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Install Windows SDK (for signtool)
-        run: |
-          choco install windows-sdk-10-version-2004-all -y
         shell: pwsh
+        run: choco install windows-sdk-10-version-2004-all -y
 
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_PATH }}
 
       - name: Decode signing certificate
+        shell: pwsh
         run: |
           $bytes = [Convert]::FromBase64String("${{ secrets.SIGNING_CERT_PFX }}")
           [IO.File]::WriteAllBytes("${{ runner.temp }}\AnilistExt.pfx", $bytes)
-        shell: pwsh
 
       - name: Build and publish
+        shell: pwsh
         run: |
           dotnet publish ${{ env.SOLUTION_PATH }} `
             -c Release `
             -r win-x64 `
             --self-contained false `
             -o publish\bin
-        shell: pwsh
 
       - name: Package MSIX
-        run: |
-          # makeappx is part of Windows SDK
-          $makeappx = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\makeappx.exe"
-          & $makeappx pack /d publish\bin /p ${{ env.MSIX_OUTPUT }} /nv /o
         shell: pwsh
+        run: |
+          $makeappx = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\makeappx.exe"
+          & $makeappx pack /d publish\bin /p "${{ env.MSIX_OUTPUT }}" /nv /o
 
       - name: Sign MSIX
+        shell: pwsh
         run: |
           $signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe"
-          & $signtool sign `
-            /fd SHA256 `
-            /f "${{ runner.temp }}\AnilistExt.pfx" `
-            /p "${{ secrets.SIGNING_CERT_PASSWORD }}" `
-            ${{ env.MSIX_OUTPUT }}
-        shell: pwsh
+          & $signtool sign /fd SHA256 /f "${{ runner.temp }}\AnilistExt.pfx" /p "${{ secrets.SIGNING_CERT_PASSWORD }}" "${{ env.MSIX_OUTPUT }}"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
