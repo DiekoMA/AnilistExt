@@ -11,7 +11,7 @@
   <Identity
     Name="DiekoMA.AnilistExt"
     Publisher="CN=DiekoMA"
-    Version="0.0.1.1" />
+    Version="0.0.1.2" />
 
   <Properties>
     <DisplayName>Anilist</DisplayName>
