@@ -1,0 +1,80 @@
+﻿										  name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*.*'   # triggers on tags like v0.0.1.0
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      SOLUTION_PATH: AnilistExt.csproj
+      MSIX_OUTPUT: publish\AnilistExt.msix
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Install Windows SDK (for signtool)
+        run: |
+          choco install windows-sdk-10-version-2004-all -y
+        shell: pwsh
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+      - name: Decode signing certificate
+        run: |
+          $bytes = [Convert]::FromBase64String("${{ secrets.SIGNING_CERT_PFX }}")
+          [IO.File]::WriteAllBytes("${{ runner.temp }}\AnilistExt.pfx", $bytes)
+        shell: pwsh
+
+      - name: Build and publish
+        run: |
+          dotnet publish ${{ env.SOLUTION_PATH }} `
+            -c Release `
+            -r win-x64 `
+            --self-contained false `
+            -o publish\bin
+        shell: pwsh
+
+      - name: Package MSIX
+        run: |
+          # makeappx is part of Windows SDK
+          $makeappx = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\makeappx.exe"
+          & $makeappx pack /d publish\bin /p ${{ env.MSIX_OUTPUT }} /nv /o
+        shell: pwsh
+
+      - name: Sign MSIX
+        run: |
+          $signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe"
+          & $signtool sign `
+            /fd SHA256 `
+            /f "${{ runner.temp }}\AnilistExt.pfx" `
+            /p "${{ secrets.SIGNING_CERT_PASSWORD }}" `
+            ${{ env.MSIX_OUTPUT }}
+        shell: pwsh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnilistExt-msix
+          path: ${{ env.MSIX_OUTPUT }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.MSIX_OUTPUT }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
