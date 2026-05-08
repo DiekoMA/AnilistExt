@@ -4,6 +4,11 @@ on:
     tags:
       - 'v*.*.*.*'
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v0.0.1.0)'
+        required: true
+        default: 'v0.0.1.0'
 jobs:
   build:
     runs-on: windows-latest
@@ -67,6 +72,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
           files: ${{ env.MSIX_OUTPUT }}
           generate_release_notes: true
         env:
