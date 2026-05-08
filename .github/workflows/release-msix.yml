@@ -50,16 +50,29 @@ jobs:
             -r win-x64 `
             --self-contained true `
             -o publish\bin
+            
           Copy-Item Package.appxmanifest publish\bin\AppxManifest.xml
-          Copy-Item -Recurse Assets publish\bin\Assets
+
+          New-Item -ItemType Directory -Force publish\bin\Assets
+          Copy-Item Assets\* publish\bin\Assets\ -Recurse -Force
 
           New-Item -ItemType Directory -Force publish\bin\Public
+
+          Get-ChildItem publish\bin | Select-Object Name
 
       - name: Package MSIX
         shell: pwsh
         run: |
           $makeappx = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\makeappx.exe"
-          & $makeappx pack /d publish\bin /p "${{ env.MSIX_OUTPUT }}" /nv /o
+          $repoRoot = $env:GITHUB_WORKSPACE
+          $publishDir = Join-Path $repoRoot "publish\bin"
+          $msixOut = Join-Path $repoRoot "${{ env.MSIX_OUTPUT }}"
+          
+          Write-Host "Packing from: $publishDir"
+          Write-Host "Output to: $msixOut"
+          Get-ChildItem $publishDir | Select-Object Name  # log what's being packed
+          
+          & $makeappx pack /d $publishDir /p $msixOut /nv /o
 
       - name: Sign MSIX
         shell: pwsh
