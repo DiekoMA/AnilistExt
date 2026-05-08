@@ -71,11 +71,23 @@ jobs:
           name: AnilistExt-msix
           path: ${{ env.MSIX_OUTPUT }}
 
+      - name: Export certificate for release
+        shell: pwsh
+        run: |
+          $bytes = [Convert]::FromBase64String("${{ secrets.SIGNING_CERT_PFX }}")
+          [IO.File]::WriteAllBytes("publish\AnilistExt.pfx", $bytes)
+
+      - name: Zip MSIX and cert together
+        shell: pwsh
+        run: | 
+          Compress-Archive -Path "publish\AnilistExt.msix", "publish\AnilistExt.pfx" `
+            -DestinationPath "publish\AnilistExt-${{ github.event.inputs.tag || github.ref_name }}.zip"
+      
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.tag || github.ref_name }}
-          files: ${{ env.MSIX_OUTPUT }}
+          files: "publish\\AnilistExt-${{ github.event.inputs.tag || github.ref_name }}.zip"
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
