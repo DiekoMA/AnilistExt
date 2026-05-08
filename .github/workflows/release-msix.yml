@@ -48,10 +48,18 @@ jobs:
           dotnet publish ${{ env.SOLUTION_PATH }} `
             -c Release `
             -r win-x64 `
+            --self-contained false `
             /p:AppxPackageDir="${{ github.workspace }}\publish\AppPackages\" `
             /p:GenerateAppxPackageOnBuild=true `
             /p:AppxBundle=Never `
             /p:UapAppxPackageBuildMode=SideloadOnly
+
+          $msix = Get-ChildItem -Recurse "publish\AppPackages" -Filter "*.msix" | Select-Object -First 1
+          Write-Host "MSIX contents:"
+          Add-Type -Assembly System.IO.Compression.FileSystem
+          $zip = [System.IO.Compression.ZipFile]::OpenRead($msix.FullName)
+          $zip.Entries | Select-Object FullName | Sort-Object FullName
+          $zip.Dispose()
 
       - name: Find and copy MSIX
         shell: pwsh
