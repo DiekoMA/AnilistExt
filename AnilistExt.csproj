@@ -18,12 +18,6 @@
 	<GenerateAppxPackageOnBuild Condition="'$(Configuration)'=='Release'">true</GenerateAppxPackageOnBuild>
   </PropertyGroup>
 
-	<PropertyGroup>
-		
-		<PublishSingleFile>false</PublishSingleFile>
-		<SelfContained>true</SelfContained>
-	</PropertyGroup>
-
   <ItemGroup>
     <Content Include=".github\workflows\release-extension.yml" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -76,7 +70,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PublishSingleFile>true</PublishSingleFile>
+    <PublishSingleFile>false</PublishSingleFile>
+    <SelfContained>false</SelfContained>
     <IsAotCompatible>true</IsAotCompatible>
 
     <CsWinRTAotOptimizerEnabled>true</CsWinRTAotOptimizerEnabled>
