@@ -48,10 +48,12 @@ jobs:
           dotnet publish ${{ env.SOLUTION_PATH }} `
             -c Release `
             -r win-x64 `
-            --self-contained false `
+            --self-contained true `
             -o publish\bin
           Copy-Item Package.appxmanifest publish\bin\AppxManifest.xml
           Copy-Item -Recurse Assets publish\bin\Assets
+
+          New-Item -ItemType Directory -Force publish\bin\Public
 
       - name: Package MSIX
         shell: pwsh
