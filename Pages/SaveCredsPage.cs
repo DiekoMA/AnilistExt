@@ -95,7 +95,7 @@ internal sealed partial class AnilistTokenContentForm : FormContent
                     if (!string.IsNullOrEmpty(newToken))
                     {
                         _ = AnilistHelper.Instance.UpdateToken(newToken);
-                        ToastStatusMessage t = new($"Saved to filePath" ?? "Nothing was entered");
+                        ToastStatusMessage t = new("Token saved! You're now authenticated." ?? "Nothing was entered");
                         t.Show();
                     }
                 })

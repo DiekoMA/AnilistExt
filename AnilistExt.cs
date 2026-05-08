@@ -27,7 +27,7 @@ public sealed partial class AnilistExt : IExtension, IDisposable
         var savedToken = AppSettings.AccessToken;
         if (!string.IsNullOrEmpty(savedToken))
         {
-            _ = AnilistHelper.Instance.UpdateToken(savedToken);
+            AnilistHelper.Instance.UpdateToken(savedToken).GetAwaiter().GetResult();
         }
     }
 

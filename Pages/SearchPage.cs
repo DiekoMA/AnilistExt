@@ -75,6 +75,20 @@ internal sealed partial class SearchPage : DynamicListPage
     {
         if (string.IsNullOrEmpty(query)) return;
         
+        if (!AnilistHelper.Instance.client.IsAuthenticated)
+        {
+            _results = [
+                new ListItem(new CommandItem(new SaveCredsPage()))
+                {
+                    Title = "Not authenticated",
+                    Subtitle = "Click here to set your AniList token",
+                }
+            ];
+            IsLoading = false;
+            RaiseItemsChanged();
+            return;
+        }
+        
         try
         {
             var mediaType = mediaFilters.SelectedMediaType;
@@ -127,7 +141,12 @@ internal sealed partial class SearchPage : DynamicListPage
                                 new DetailsElement()  
                                 {  
                                     Key = "Start Date",  
-                                    Data = new DetailsLink() { Text = $"{m.StartDate.ToString()}"},
+                                    Data = new DetailsLink()
+                                    {
+                                        Text = m.StartDate is { Year: not null, Month: not null }
+                                            ? $"{m.StartDate.Year}/{m.StartDate.Month:D2}/{m.StartDate.Day:D2}"
+                                            : "Unknown"
+                                    },
                                 },  
                                 m.Type == MediaType.Anime ? new DetailsElement()  
                                 {  
@@ -178,6 +197,11 @@ internal sealed partial class SearchPage : DynamicListPage
         {
             Log.Logger.Information(ex, "FetchManga");
             _results = [new ListItem(new NoOpCommand()) { Title = $"{ex.Message}." }];
+        }
+        catch (Exception ex)
+        {
+            Log.Logger.Error(ex, "Unexpected error in FetchMedia");
+            _results = [new ListItem(new NoOpCommand()) { Title = $"Error: {ex.Message}" }];
         }
         finally
         {
