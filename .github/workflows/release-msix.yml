@@ -43,6 +43,8 @@ jobs:
             -r win-x64 `
             --self-contained false `
             -o publish\bin
+          Copy-Item Package.appxmanifest publish\bin\AppxManifest.xml
+          Copy-Item -Recurse Assets publish\bin\Assets
 
       - name: Package MSIX
         shell: pwsh
