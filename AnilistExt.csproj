@@ -18,14 +18,8 @@
 	<GenerateAppxPackageOnBuild Condition="'$(Configuration)'=='Release'">true</GenerateAppxPackageOnBuild>
   </PropertyGroup>
 
-	<PropertyGroup>
-		
-		<PublishSingleFile>false</PublishSingleFile>
-		<SelfContained>true</SelfContained>
-	</PropertyGroup>
-
   <ItemGroup>
-    <Content Include=".github\workflows\release-extension.yml" />
+    <None Include=".github\workflows\release-extension.yml" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
@@ -61,6 +55,12 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+	<Content Remove=".gitignore"/>
+	<Content Remove="build-exe.ps1"/>
+	<Content Remove="setup.iss"/>
+	<Content Remove="Package.appxmanifest"/>
+	<Content Remove=".Properties\launchSettings.json"/>
+	<None Remove=".github\**\*"/>
     <None Update="Assets\AniListlogo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -75,26 +75,11 @@
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <PublishSingleFile>true</PublishSingleFile>
-    <IsAotCompatible>true</IsAotCompatible>
-
-    <CsWinRTAotOptimizerEnabled>true</CsWinRTAotOptimizerEnabled>
-    <CsWinRTAotWarningLevel>2</CsWinRTAotWarningLevel>
-    <!-- Suppress DynamicallyAccessedMemberTypes.PublicParameterlessConstructor in fallback code path of Windows SDK projection -->
-    <WarningsNotAsErrors>IL2081;$(WarningsNotAsErrors)</WarningsNotAsErrors>
-
-    <!-- When publishing trimmed, make sure to treat trimming warnings as build errors -->
-    <ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
-
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <!-- In Debug builds, trimming is disabled by default, but all the trim & 
          AOT warnings are enabled. This gives debug builds a tighter inner loop,
          while at least warning about future trim violations -->
     <PublishTrimmed>false</PublishTrimmed>
-    
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
     <EnableAotAnalyzer>true</EnableAotAnalyzer>
@@ -103,7 +88,9 @@
   <PropertyGroup Condition="'$(Configuration)'!='Debug'">
     <!-- In Release builds, trimming is enabled by default. 
          feel free to disable this if needed -->
-    <PublishTrimmed>true</PublishTrimmed>
+    <PublishTrimmed>false</PublishTrimmed>
+	<PublishSingleFile>false</PublishSingleFile>
+    <SelfContained>false</SelfContained>
 
     <!-- In release, also ignore the aforementioned ILLink warning -->
     <ILLinkTreatWarningsAsErrors>false</ILLinkTreatWarningsAsErrors>
