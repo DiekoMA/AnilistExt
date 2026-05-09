@@ -42,32 +42,37 @@ jobs:
           $bytes = [Convert]::FromBase64String("${{ secrets.SIGNING_CERT_PFX }}")
           [IO.File]::WriteAllBytes("${{ runner.temp }}\AnilistExt.pfx", $bytes)
 
-      - name: Build
+      - name: Build and publish
         shell: pwsh
         run: |
           dotnet publish ${{ env.SOLUTION_PATH }} `
             -c Release `
             -r win-x64 `
-            --self-contained false `
-            /p:AppxPackageDir="${{ github.workspace }}\publish\AppPackages\" `
-            /p:GenerateAppxPackageOnBuild=true `
-            /p:AppxBundle=Never `
-            /p:UapAppxPackageBuildMode=SideloadOnly
+            --self-contained true `
+            -o publish\bin
+            
+          Copy-Item Package.appxmanifest publish\bin\AppxManifest.xml
 
-          $msix = Get-ChildItem -Recurse "publish\AppPackages" -Filter "*.msix" | Select-Object -First 1
-          Write-Host "MSIX contents:"
-          Add-Type -Assembly System.IO.Compression.FileSystem
-          $zip = [System.IO.Compression.ZipFile]::OpenRead($msix.FullName)
-          $zip.Entries | Select-Object FullName | Sort-Object FullName
-          $zip.Dispose()
+          New-Item -ItemType Directory -Force publish\bin\Assets
+          Copy-Item Assets\* publish\bin\Assets\ -Recurse -Force
 
-      - name: Find and copy MSIX
+          New-Item -ItemType Directory -Force publish\bin\Public
+
+          Get-ChildItem publish\bin | Select-Object Name
+
+      - name: Package MSIX
         shell: pwsh
         run: |
-          $msix = Get-ChildItem -Recurse "publish\AppPackages" -Filter "*.msix" | Select-Object -First 1
-          Write-Host "Found MSIX: $($msix.FullName)"
-          New-Item -ItemType Directory -Force publish
-          Copy-Item $msix.FullName "${{ env.MSIX_OUTPUT }}"
+          $makeappx = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\makeappx.exe"
+          $repoRoot = $env:GITHUB_WORKSPACE
+          $publishDir = Join-Path $repoRoot "publish\bin"
+          $msixOut = Join-Path $repoRoot "${{ env.MSIX_OUTPUT }}"
+          
+          Write-Host "Packing from: $publishDir"
+          Write-Host "Output to: $msixOut"
+          Get-ChildItem $publishDir | Select-Object Name  # log what's being packed
+          
+          & $makeappx pack /d $publishDir /p $msixOut /nv /o
 
       - name: Sign MSIX
         shell: pwsh
