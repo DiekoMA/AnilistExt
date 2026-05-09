@@ -1,11 +1,4 @@
-﻿using System;
-using AnilistExt.Helpers;
-using AniListNet;
-using AniListNet.Parameters;
-using Microsoft.CommandPalette.Extensions.Toolkit;
-using Serilog;
-
-namespace AnilistExt.Commands;
+﻿namespace AnilistExt.Commands;
 
 internal sealed partial class RemoveFromUserList : InvokableCommand
 {
@@ -24,6 +17,11 @@ internal sealed partial class RemoveFromUserList : InvokableCommand
                 Log.Logger.Error("Removing media with id ${_mediaId}", _mediaId);
                 await AnilistHelper.Instance.client.DeleteMediaEntryAsync(_mediaId);
             });
+        }
+        catch (AniException ex)
+        {
+            Log.Logger.Error(ex.Message);
+            Console.WriteLine(ex.Message);
         }
         catch (Exception e)
         {

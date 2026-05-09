@@ -1,14 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Text.Json.Nodes;
-using AnilistExt.Helpers;
-using AniListNet;
-using Microsoft.CommandPalette.Extensions;
-using Microsoft.CommandPalette.Extensions.Toolkit;
-using Serilog;
-using Serilog.Core;
-
-namespace AnilistExt;
+﻿namespace AnilistExt;
 
 internal sealed partial class SaveCredsPage : ContentPage
 {
@@ -81,7 +71,7 @@ internal sealed partial class AnilistTokenContentForm : FormContent
         {
             return CommandResult.GoHome();
         }
-        
+
         ConfirmationArgs confirmArgs = new()
         {
             PrimaryCommand = new AnonymousCommand(
@@ -89,9 +79,9 @@ internal sealed partial class AnilistTokenContentForm : FormContent
                 {
                     AnilistExt.AppSettings.Settings.Update(payload);
                     AnilistExt.AppSettings.SaveSettings();
-                    
+
                     var newToken = AnilistExt.AppSettings.AccessToken;
-                    
+
                     if (!string.IsNullOrEmpty(newToken))
                     {
                         _ = AnilistHelper.Instance.UpdateToken(newToken);

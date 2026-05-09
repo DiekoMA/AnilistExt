@@ -1,8 +1,4 @@
-﻿using System;
-using System.Text.Json.Nodes;
-using Serilog;
-
-namespace AnilistExt;
+﻿namespace AnilistExt;
 
 internal sealed partial class AddToListPage : ContentPage
 {
@@ -111,7 +107,7 @@ internal sealed partial class AddToListContentForm : FormContent
                          """;
         Log.Logger.Information("TemplateJson: {json}", TemplateJson);
     }
-    
+
 
     public override CommandResult SubmitForm(string payload)
     {
@@ -125,7 +121,7 @@ internal sealed partial class AddToListContentForm : FormContent
         _ = int.TryParse(formInput["epprogress"].ToString(), out int progress);
         DateTime.TryParse((string?)formInput["startdate"], out var startDate);
         DateTime.TryParse((string?)formInput["finishdate"], out var finishDate);
-        
+
         ConfirmationArgs confirmArgs = new()
         {
             PrimaryCommand = new AnonymousCommand(
@@ -137,8 +133,7 @@ internal sealed partial class AddToListContentForm : FormContent
                             try
                             {
                                 await AddEntryToUser(_currentMedia.Id, status, score, progress, startDate, finishDate);
-                            }
-                            catch (Exception e)
+                            } catch (Exception e)
                             {
                                 Log.Logger.Error(e.Message);
                             }
@@ -155,13 +150,13 @@ internal sealed partial class AddToListContentForm : FormContent
 
     private static MediaEntryStatus ParseStatus(string? value) => value switch
     {
-        "watching"      => MediaEntryStatus.Current,
+        "watching" => MediaEntryStatus.Current,
         "plan_to_watch" => MediaEntryStatus.Planning,
-        "completed"     => MediaEntryStatus.Completed,
-        "rewatching"    => MediaEntryStatus.Repeating,
-        "paused"        => MediaEntryStatus.Paused,
-        "dropped"       => MediaEntryStatus.Dropped,
-        _               => throw new ArgumentOutOfRangeException(nameof(value), $"Unknown status: {value}")
+        "completed" => MediaEntryStatus.Completed,
+        "rewatching" => MediaEntryStatus.Repeating,
+        "paused" => MediaEntryStatus.Paused,
+        "dropped" => MediaEntryStatus.Dropped,
+        _ => throw new ArgumentOutOfRangeException(nameof(value), $"Unknown status: {value}")
     };
     private async Task AddEntryToUser(int mediaId, string status, int score, int progress, DateTime startDate, DateTime endDate)
     {

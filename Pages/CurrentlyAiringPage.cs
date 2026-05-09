@@ -1,6 +1,6 @@
 ﻿namespace AnilistExt;
 
-internal sealed partial class  CurrentlyAiringPage : ContentPage
+internal sealed partial class CurrentlyAiringPage : ContentPage
 {
     public override IContent[] GetContent()
     {

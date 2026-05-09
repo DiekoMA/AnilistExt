@@ -14,7 +14,7 @@ public partial class AnilistExtCommandsProvider : CommandProvider
         Id = "com.diekoma.anilistextension";
         Icon = IconHelpers.FromRelativePath("Assets\\AniListlogo.png");
         _commands = [
-            new CommandItem(new AnilistExtPage()) { Title = DisplayName }
+            new CommandItem(new AnilistExtPage()) { Title = DisplayName },
         ];
     }
 
@@ -22,28 +22,27 @@ public partial class AnilistExtCommandsProvider : CommandProvider
     {
         return _commands;
     }
-    
+
     //Coming in the next update
-    // public override ICommandItem[]? GetDockBands()
-    // {
-    //     
-    //     var profileButton = new ListItem(new AniUserProfilePage())
-    //     {
-    //         Title = "Profile",
-    //         Icon = IconHelpers.FromRelativePath("Assets\\AniListlogo.png")
-    //     };
-    //     // var airingButton= new ListItem(new NoOpCommand())
-    //     // {
-    //     //     Title = "Currently Airing",
-    //     //     Icon = IconHelpers.FromRelativePath("Assets\\AniListlogo.png")
-    //     // };
-    //     
-    //     List<ICommandItem> bands =
-    //     [
-    //         profileButton,
+    //public override ICommandItem[]? GetDockBands()
+    //{
+    //    var profileBand = new ListItem(new AniUserProfilePage(AnilistHelper.Instance.authedUser))
+    //    {
+    //        Title = "Profile",
+    //        Icon = IconHelpers.FromRelativePath("Assets\\AniListlogo.png")
+    //    };
+    //    // var airingButton= new ListItem(new NoOpCommand())
+    //    // {
+    //    //     Title = "Currently Airing",
+    //    //     Icon = IconHelpers.FromRelativePath("Assets\\AniListlogo.png")
+    //    // };
+
+    //    List<ICommandItem> bands =
+    //    [
+    //        profileBand,
     //         //airingButton
     //     ];
-    //     
-    //     return bands.ToArray();
-    // }
+
+    //    return bands.ToArray();
+    //}
 }

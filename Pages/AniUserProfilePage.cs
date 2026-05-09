@@ -4,25 +4,17 @@ internal sealed partial class AniUserProfilePage : ContentPage
 {
     public override IContent[] GetContent()
     {
-        return [new AnilistUserForm(aniUser)];
+        return [new AnilistUserForm(_aniUser)];
     }
 
-    User aniUser = new();
-    bool isAuthed = AnilistHelper.Instance.client.IsAuthenticated;
-    
-    public AniUserProfilePage()
+    private readonly User _aniUser = new();
+
+    public AniUserProfilePage(User aniUser)
     {
+        _aniUser = aniUser;
         Name = "Profile";
         Title = "Your Profile";
         Icon = new IconInfo("\uECA5");
-    }
-    
-    private async Task SetAuthedUser()
-    {
-        if (!isAuthed)
-        {       
-            aniUser = await AnilistHelper.Instance.client.GetAuthenticatedUserAsync();
-        } 
     }
 }
 
@@ -31,36 +23,58 @@ internal sealed partial class AnilistUserForm : FormContent
     public AnilistUserForm(User user)
     {
         TemplateJson = $$"""
-                         {
+                                                  {
                              "type": "AdaptiveCard",
                              "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
                              "version": "1.6",
+                             "speak": "Anime/Manga Page",
                              "body": [
                                  {
-                                     "type": "Container",
-                                     "items": [
+                                     "type": "ColumnSet",
+                                     "columns": [
                                          {
-                                             "type": "Image",
-                                             "url": "https://s4.anilist.co/file/anilistcdn/user/avatar/large/b576381-w0jRiU1Ci7JQ.jpg",
-                                             "altText": "profile image",
-                                             "size": "Large"
+                                             "type": "Column",
+                                             "width": "stretch",
+                                             "items": [
+                                                 {
+                                                     "type": "Image",
+                                                     "url": "{{user.Avatar.LargeImageUrl}}",
+                                                     "style": "RoundedCorners",
+                                                     "horizontalAlignment": "Left",
+                                                     "size": "Stretch"
+                                                 }
+                                             ]
                                          },
                                          {
-                                             "type": "TextBlock",
-                                             "text": "{{user.Name}}",
-                                             "wrap": true
-                                         },
-                                         {
-                                             "type": "TextBlock",
-                                             "text": "I love manga and code and stuff so yeah",
-                                             "wrap": true
+                                             "type": "Column",
+                                             "width": "stretch",
+                                             "items": [
+                                                 {
+                                                     "type": "TextBlock",
+                                                     "text": "{{user.Name}}",
+                                                     "wrap": true,
+                                                     "weight": "Bolder",
+                                                     "size": "ExtraLarge",
+                                                     "fontType": "Default",
+                                                     "style": "heading"
+                                                 },
+                                                 {
+                                                     "type": "TextBlock",
+                                                     "text": "{{user.About}}",
+                                                     "wrap": true
+                                                 }
+                                             ]
                                          }
-                                     ],
-                                     "separator": true,
-                                     "horizontalAlignment": "Left",
-                                     "roundedCorners": true
+                                     ]
+                                 },
+                                 {
+                                     "type": "CompoundButton",
+                                     "title": "Notice",
+                                     "description": "This will change later, after i add some extra functionality to the extension."
                                  }
-                             ]
+                             ],
+                             "rtl": false,
+                             "minHeight": "455px"
                          }
                          """;
     }
